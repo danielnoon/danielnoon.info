@@ -1,0 +1,87 @@
+@import "/css/reset.css";
+@import "https://fonts.googleapis.com/css?family=Julius+Sans+One|Noto+Sans+JP|Quicksand&display=swap";
+
+body,
+html {
+  background-color: black;
+  color: white;
+  overflow: hidden;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+#effects {
+  opacity: 0;
+  animation: fade-in 4s linear 1s forwards;
+}
+
+#effects,
+.bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.bg {
+  opacity: 0;
+  background-position: center;
+  background-size: cover;
+  transition: opacity 0.2s ease-in-out;
+  background-blend-mode: lighten;
+}
+
+.bg.visible {
+  opacity: 1;
+}
+
+#bg-raikes {
+  background-image: url(/files/images/kauffman.png);
+}
+
+#bg-japanese {
+  background-image: url(/files/images/tokyo.jpg);
+}
+
+#bg-omaha {
+  background-image: url(/files/images/omaha.jpg);
+}
+
+.wrapper {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
+
+.center {
+  margin: auto;
+  transition: 200ms ease;
+}
+
+main,
+header,
+footer {
+  background-color: rgba(5, 5, 5, 0.8);
+  background-blend-mode: multiply;
+  backdrop-filter: blur(4px);
+  padding: 50px;
+  border-radius: 10px;
+  margin: 1em;
+}
+
+.yield {
+  opacity: 0.25;
+}
+
+h1 {
+  margin: 0;
+}
