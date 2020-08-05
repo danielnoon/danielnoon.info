@@ -21,7 +21,8 @@ export function addBubbles(effects) {
           new Vector2D(
             (3 * window.innerWidth) / 4,
             (window.innerHeight * 3) / 4
-          )
+          ),
+          "https://typescript.org"
         )
       ),
     4000
@@ -34,7 +35,8 @@ export function addBubbles(effects) {
           "/files/images/js.jpg",
           50,
           new Vector2D(-200, window.innerHeight / 4),
-          new Vector2D(window.innerWidth / 4, (window.innerHeight * 3) / 4)
+          new Vector2D(window.innerWidth / 4, (window.innerHeight * 3) / 4),
+          "https://developer.mozilla.org/en-US/docs/Web/JavaScript"
         )
       ),
     5000
@@ -50,7 +52,8 @@ export function addBubbles(effects) {
           new Vector2D(
             (3 * window.innerWidth) / 4,
             (window.innerHeight * 3) / 4 - 100
-          )
+          ),
+          "https://angular.io"
         )
       ),
     6000
@@ -66,7 +69,8 @@ export function addBubbles(effects) {
           new Vector2D(
             window.innerWidth / 4,
             (window.innerHeight * 3) / 4 - 100
-          )
+          ),
+          "https://reactjs.org"
         )
       ),
     7000
@@ -82,7 +86,8 @@ export function addBubbles(effects) {
           new Vector2D(
             (3 * window.innerWidth) / 4,
             (window.innerHeight * 3) / 4 - 200
-          )
+          ),
+          "https://nodejs.org"
         )
       ),
     8000
@@ -98,7 +103,8 @@ export function addBubbles(effects) {
           new Vector2D(
             window.innerWidth / 4,
             (window.innerHeight * 3) / 4 - 200
-          )
+          ),
+          "https://docker.io"
         )
       ),
     9000

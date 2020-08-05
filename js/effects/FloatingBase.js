@@ -1,9 +1,11 @@
 import { Vector2D } from "../Vector2D.js";
 import { randomColor } from "../util/randomColor.js";
 import { randomInt } from "../util/randomInt.js";
-import { easeInOutSine } from "../util/ease.js";
+import { easeInOutSine, materialEasing } from "../util/ease.js";
 import { clamp } from "../util/clamp.js";
 import { EffectBase } from "./EffectBase.js";
+import { TransitionState } from "../TransitionState.js";
+import { bezier } from "../util/BezierEasing.js";
 
 export class FloatingBase extends EffectBase {
   constructor(startingPoint, endPoint) {
@@ -23,16 +25,26 @@ export class FloatingBase extends EffectBase {
     this.velocity = Vector2D.zero;
     this.acceleration = Vector2D.zero;
 
-    this.xMoveTimeStart = Date.now();
-    this.xMoveTimeEnd = Date.now() + randomInt(4000, 8000);
-    this.yMoveTimeStart = Date.now();
-    this.yMoveTimeEnd = Date.now() + randomInt(3000, 10000);
+    this.xTransition = new TransitionState(
+      randomInt(4000, 8000),
+      easeInOutSine
+    );
+
+    this.yTransition = new TransitionState(
+      randomInt(3500, 8500),
+      easeInOutSine
+    );
 
     this.direction = randomInt(0, 2 * Math.PI);
     this.startDirection = this.direction;
     this.endDirection = randomInt(
       this.direction - Math.PI / 2,
       this.direction + Math.PI / 2
+    );
+
+    this.rotationTransition = new TransitionState(
+      randomInt(5000, 10000),
+      materialEasing
     );
 
     this.startDirectionTime = Date.now();
@@ -46,58 +58,64 @@ export class FloatingBase extends EffectBase {
     const y = this.target.y - this.start.y;
     const direction = this.endDirection - this.startDirection;
 
-    const xTimeElapsed = now - this.xMoveTimeStart;
-    const xTimeTotal = this.xMoveTimeEnd - this.xMoveTimeStart;
-    const xPercentTime = xTimeElapsed / xTimeTotal;
-
-    const yTimeElapsed = now - this.yMoveTimeStart;
-    const yTimeTotal = this.yMoveTimeEnd - this.yMoveTimeStart;
-    const yPercentTime = yTimeElapsed / yTimeTotal;
-
-    const directionTimeElapsed = now - this.startDirectionTime;
-    const directionTimeTotal = this.endDirectionTime - this.startDirectionTime;
-    const percentDirectionTime = directionTimeElapsed / directionTimeTotal;
-
-    const dx = x * easeInOutSine(xPercentTime);
-    const dy = y * easeInOutSine(yPercentTime);
-    const dd = direction * easeInOutSine(percentDirectionTime);
+    const dx = x * this.xTransition.now();
+    const dy = y * this.yTransition.now();
+    const dd = direction * this.rotationTransition.now();
 
     this.position.x = this.start.x + dx;
     this.position.y = this.start.y + dy;
     this.direction = this.startDirection + dd;
 
-    if (now >= this.xMoveTimeEnd) {
-      this.start.x = this.target.x;
-      this.target.x = clamp(
-        randomInt(this.target.x - 100, this.target.x + 100),
-        -10,
-        window.innerWidth + 10
-      );
-      this.xMoveTimeStart = Date.now();
-      this.xMoveTimeEnd = Date.now() + randomInt(4000, 8000);
+    if (this.xTransition.done) {
+      this.resetXAnimation();
     }
 
-    if (now >= this.yMoveTimeEnd) {
-      this.start.y = this.target.y;
-      this.target.y = clamp(
-        randomInt(this.target.y - 100, this.target.y + 100),
-        -10,
-        window.innerHeight + 10
-      );
-      this.yMoveTimeStart = Date.now();
-      this.yMoveTimeEnd = Date.now() + randomInt(3000, 8000);
+    if (this.yTransition.done) {
+      this.resetYAnimation();
     }
 
-    if (now >= this.endDirectionTime) {
-      this.startDirection = this.endDirection;
-
-      this.endDirection = randomInt(
-        this.direction - Math.PI / 2,
-        this.direction + Math.PI / 2
-      );
-
-      this.startDirectionTime = Date.now();
-      this.endDirectionTime = Date.now() + randomInt(4000, 8000);
+    if (this.rotationTransition.done) {
+      this.resetRoationAnimation();
     }
+  }
+
+  resetXAnimation() {
+    this.start.x = this.target.x;
+    this.target.x = clamp(
+      randomInt(this.target.x - 100, this.target.x + 100),
+      -10,
+      window.innerWidth + 10
+    );
+    this.xTransition = new TransitionState(
+      randomInt(4000, 8000),
+      easeInOutSine
+    );
+  }
+
+  resetYAnimation() {
+    this.start.y = this.target.y;
+    this.target.y = clamp(
+      randomInt(this.target.y - 100, this.target.y + 100),
+      -10,
+      window.innerHeight + 10
+    );
+    this.yTransition = new TransitionState(
+      randomInt(3500, 8500),
+      easeInOutSine
+    );
+  }
+
+  resetRoationAnimation() {
+    this.startDirection = this.endDirection;
+
+    this.endDirection = randomInt(
+      this.direction - Math.PI / 2,
+      this.direction + Math.PI / 2
+    );
+
+    this.rotationTransition = new TransitionState(
+      randomInt(5000, 10000),
+      materialEasing
+    );
   }
 }

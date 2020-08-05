@@ -39,11 +39,15 @@ class EventListener {
   }
 
   attach() {
-    this._on.addEventListener(this._type, this._callListeners);
+    (this._on instanceof Array ? this._on : [this._on]).forEach((e) =>
+      e.addEventListener(this._type, this._callListeners)
+    );
   }
 
   dispose() {
-    this._on.removeEventListener(this._type, this._callListeners);
+    (this._on instanceof Array ? this._on : [this._on]).forEach((e) =>
+      e.removeEventListener(this._type, this._callListeners)
+    );
   }
 }
 

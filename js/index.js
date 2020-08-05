@@ -8,6 +8,9 @@ import { ev } from "./util/ev.js";
 import { addBubbles } from "./addBubbles.js";
 import { Range } from "./Iterator.js";
 
+window.el = el;
+window.ev = ev;
+
 const canvas = document.getElementById("effects");
 const effects = new BackgroundEffect(canvas);
 

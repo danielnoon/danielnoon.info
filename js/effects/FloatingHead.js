@@ -2,9 +2,14 @@ import { FloatingBase } from "./FloatingBase.js";
 import { Vector2D } from "../Vector2D.js";
 import { TransitionState } from "../TransitionState.js";
 import { easeInOutSine } from "../util/ease.js";
+import { bezier } from "../util/BezierEasing.js";
 
 export class FloatingHead extends FloatingBase {
-  constructor(source, size, start, target) {
+  static get scaleTransition() {
+    return bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  constructor(source, size, start, target, linkTo) {
     super(start, target);
 
     this.image = new Image(size, size);
@@ -17,7 +22,9 @@ export class FloatingHead extends FloatingBase {
     this.delayStart = 0;
 
     this.scaleTransition = null;
-    this.scaleUp = true;
+    this.scaleUp = false;
+
+    this.linkTo = linkTo;
   }
 
   /**
@@ -61,8 +68,8 @@ export class FloatingHead extends FloatingBase {
 
   updateScale() {
     const current = this.scaleTransition.now();
-    console.log(current);
-    if (current === -1) {
+
+    if (this.scaleTransition.done) {
       this.scaleTransition = null;
     } else {
       this.size =
@@ -74,22 +81,44 @@ export class FloatingHead extends FloatingBase {
 
   handleEvent(event) {
     if (event.type === "mousemove") {
-      const mouseVector = new Vector2D(event.native.pageX, event.native.pageY);
+      const mouseVector = new Vector2D(
+        event.native.clientX,
+        event.native.clientY
+      );
       const delta = mouseVector.subtract(this.position);
 
-      if (delta.magnitude() < this.radius) {
+      if (!event._handled && delta.magnitude() < this.radius) {
         event.handle();
         this.hover = true;
         if (!this.scaleUp) {
           this.scaleUp = true;
-          this.scaleTransition = new TransitionState(200, easeInOutSine);
+          this.scaleTransition = new TransitionState(
+            300,
+            FloatingHead.scaleTransition
+          );
         }
       } else {
         this.hover = false;
         if (this.scaleUp) {
           this.scaleUp = false;
-          this.scaleTransition = new TransitionState(200, easeInOutSine);
+          this.scaleTransition = new TransitionState(
+            300,
+            FloatingHead.scaleTransition
+          );
         }
+      }
+    }
+
+    if (event.type === "click") {
+      const mouseVector = new Vector2D(
+        event.native.clientX,
+        event.native.clientY
+      );
+      const delta = mouseVector.subtract(this.position);
+
+      if (this.linkTo && !event._handled && delta.magnitude() < this.radius) {
+        open(this.linkTo);
+        event.handle();
       }
     }
   }

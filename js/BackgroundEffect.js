@@ -1,5 +1,6 @@
 import { ev } from "./util/ev.js";
 import { CanvasEvent } from "./Event.js";
+import { el } from "./util/el.js";
 
 export class BackgroundEffect {
   /**
@@ -12,9 +13,27 @@ export class BackgroundEffect {
 
     this.resizeCanvas();
 
+    this.disableEvents = false;
+
+    this.yield = el("#yield-visible");
+
+    const center = el("#center");
+
+    ev("mouseover", el("main, header, footer")).listen(
+      () => (this.disableEvents = true)
+    );
+    ev("mouseout", el("main, header, footer")).listen(
+      () => (this.disableEvents = false)
+    );
+
     ev("resize").listen(() => this.resizeCanvas());
-    ev("mousemove").listen((ev) =>
+
+    ev("mousemove", center).listen((ev) =>
       this.bubbleEvent(new CanvasEvent("mousemove", ev))
+    );
+
+    ev("click", center).listen((ev) =>
+      this.bubbleEvent(new CanvasEvent("click", ev))
     );
   }
 
@@ -54,11 +73,9 @@ export class BackgroundEffect {
   }
 
   bubbleEvent(event) {
-    for (let effect of this.effects.slice().reverse()) {
-      effect.handleEvent(event);
-
-      if (event._handled) {
-        break;
+    if (!this.disableEvents || this.yield.hidden) {
+      for (let effect of this.effects.slice().reverse()) {
+        effect.handleEvent(event);
       }
     }
   }
