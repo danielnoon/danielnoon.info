@@ -82,7 +82,7 @@ export class FloatingBase extends EffectBase {
       this.target.y = clamp(
         randomInt(this.target.y - 100, this.target.y + 100),
         -10,
-        window.innerWidth + 10
+        window.innerHeight + 10
       );
       this.yMoveTimeStart = Date.now();
       this.yMoveTimeEnd = Date.now() + randomInt(3000, 8000);
