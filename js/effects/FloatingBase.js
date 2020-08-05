@@ -2,18 +2,22 @@ import { Vector2D } from "../Vector2D.js";
 import { randomColor } from "../util/randomColor.js";
 import { randomInt } from "../util/randomInt.js";
 import { easeInOutSine } from "../util/ease.js";
+import { clamp } from "../util/clamp.js";
+import { EffectBase } from "./EffectBase.js";
 
-export class FloatingBase {
+export class FloatingBase extends EffectBase {
   constructor(startingPoint, endPoint) {
+    super();
+
     this.position = startingPoint || Vector2D.randomFromWindow();
     this.start = new Vector2D(this.position.x, this.position.y);
     this.target =
       endPoint ||
       Vector2D.random(
-        this.start.x - 100,
-        this.start.y - 100,
-        this.start.x + 100,
-        this.start.y + 100
+        clamp(this.start.x - 100, -10, window.innerWidth + 10),
+        clamp(this.start.y - 100, -10, window.innerHeight + 10),
+        clamp(this.start.x + 100, -10, window.innerWidth + 10),
+        clamp(this.start.y + 100, -10, window.innerHeight + 10)
       );
 
     this.velocity = Vector2D.zero;
@@ -64,14 +68,22 @@ export class FloatingBase {
 
     if (now >= this.xMoveTimeEnd) {
       this.start.x = this.target.x;
-      this.target.x = randomInt(this.target.x - 100, this.target.x + 100);
+      this.target.x = clamp(
+        randomInt(this.target.x - 100, this.target.x + 100),
+        -10,
+        window.innerWidth + 10
+      );
       this.xMoveTimeStart = Date.now();
       this.xMoveTimeEnd = Date.now() + randomInt(4000, 8000);
     }
 
     if (now >= this.yMoveTimeEnd) {
       this.start.y = this.target.y;
-      this.target.y = randomInt(this.target.y - 100, this.target.y + 100);
+      this.target.y = clamp(
+        randomInt(this.target.y - 100, this.target.y + 100),
+        -10,
+        window.innerWidth + 10
+      );
       this.yMoveTimeStart = Date.now();
       this.yMoveTimeEnd = Date.now() + randomInt(3000, 8000);
     }
