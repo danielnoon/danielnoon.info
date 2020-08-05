@@ -1,16 +1,16 @@
-export class Event {
+export class CanvasEvent {
   constructor(type, native) {
     this.type = type;
     this.native = native;
 
-    this.handled = false;
+    this._handled = false;
   }
 
   continue() {
-    this.handled = false;
+    this._handled = false;
   }
 
   handle() {
-    this.handled = true;
+    this._handled = true;
   }
 }

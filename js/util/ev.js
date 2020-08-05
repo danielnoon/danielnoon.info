@@ -1,23 +1,56 @@
 class EventListener {
-  constructor() {
-    this.callbacks = [];
+  constructor(type, on) {
+    this._on = on;
+    this._type = type;
 
-    this.callListeners = this.callListeners.bind(this);
+    this._callbacks = [];
+    this._identity = new Map();
+
+    this._callListeners = this._callListeners.bind(this);
   }
 
-  listen(callback) {
-    this.callbacks.push(callback);
+  listen(callback, id) {
+    this._identity.set(id || callback, callback);
+    this._callbacks.push(callback);
   }
 
-  callListeners(ev) {
-    this.callbacks.forEach((callback) => callback(ev));
+  remove(id) {
+    const callback = this._identity.get(id);
+    const idx = this._callbacks.indexOf(callback);
+    if (idx >= 0) {
+      this._callbacks.splice(idx, 1);
+      this._identity.delete(id);
+    }
+  }
+
+  get once() {
+    return new Promise((resolve, reject) => {
+      const f = (ev) => {
+        this.remove(f);
+        resolve(ev);
+      };
+
+      this.listen(f);
+    });
+  }
+
+  _callListeners(ev) {
+    this._callbacks.forEach((callback) => callback(ev));
+  }
+
+  attach() {
+    this._on.addEventListener(this._type, this._callListeners);
+  }
+
+  dispose() {
+    this._on.removeEventListener(this._type, this._callListeners);
   }
 }
 
 export const ev = (type, on) => {
-  const listener = new EventListener();
+  const listener = new EventListener(type, on || window);
 
-  (on || window).addEventListener(type, listener.callListeners);
+  listener.attach();
 
   return listener;
 };

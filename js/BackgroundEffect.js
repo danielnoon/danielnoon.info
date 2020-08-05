@@ -1,3 +1,6 @@
+import { ev } from "./util/ev.js";
+import { CanvasEvent } from "./Event.js";
+
 export class BackgroundEffect {
   /**
    * @param {HTMLCanvasElement} canvas
@@ -9,7 +12,10 @@ export class BackgroundEffect {
 
     this.resizeCanvas();
 
-    addEventListener("resize", () => this.resizeCanvas());
+    ev("resize").listen(() => this.resizeCanvas());
+    ev("mousemove").listen((ev) =>
+      this.bubbleEvent(new CanvasEvent("mousemove", ev))
+    );
   }
 
   resizeCanvas() {
@@ -44,6 +50,16 @@ export class BackgroundEffect {
   paintEffects() {
     for (let effect of this.effects) {
       effect.paint(this.context);
+    }
+  }
+
+  bubbleEvent(event) {
+    for (let effect of this.effects.slice().reverse()) {
+      effect.handleEvent(event);
+
+      if (event._handled) {
+        break;
+      }
     }
   }
 }

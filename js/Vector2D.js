@@ -31,10 +31,22 @@ export class Vector2D {
   }
 
   /**
-   *
+   * Add this vector to another and return the result
    * @param {Vector2D} vector
    */
   add(vector) {
     return new Vector2D(this.x + vector.x, this.y + vector.y);
+  }
+
+  invert() {
+    return new Vector2D(-this.x, -this.y);
+  }
+
+  subtract(vector) {
+    return this.add(vector.invert());
+  }
+
+  magnitude() {
+    return Math.sqrt(this.x ** 2 + this.y ** 2);
   }
 }
