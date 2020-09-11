@@ -1,0 +1,122 @@
+import { Effect } from "../src/app/background/effects/base/Effect";
+import { Vector2 } from "../src/app/util/Vector2";
+import { clamp } from "../src/app/util/fn/clamp";
+import { randomInt } from "../src/app/util/fn/randomInt";
+
+export abstract class FloatingBase extends Effect {
+  private position: Vector2;
+  private start: Vector2;
+  private target: Vector2;
+  private velocity = Vector2.zero;
+  private acceleration = Vector2.zero;
+
+  private direction: number;
+
+  constructor(startingPoint?: Vector2, endPoint?: Vector2) {
+    super();
+
+    this.position = startingPoint || Vector2.randomFromWindow();
+    this.start = this.position.clone();
+    this.target =
+      endPoint ||
+      Vector2.random(
+        clamp(this.start.x - 100, -10, window.innerWidth + 10),
+        clamp(this.start.y - 100, -10, window.innerHeight + 10),
+        clamp(this.start.x + 100, -10, window.innerWidth + 10),
+        clamp(this.start.y + 100, -10, window.innerHeight + 10)
+      );
+
+    this.xTransition = new TransitionState(
+      randomInt(4000, 8000),
+      easeInOutSine
+    );
+
+    this.yTransition = new TransitionState(
+      randomInt(3500, 8500),
+      easeInOutSine
+    );
+
+    this.direction = randomInt(0, 2 * Math.PI);
+    this.startDirection = this.direction;
+    this.endDirection = randomInt(
+      this.direction - Math.PI / 2,
+      this.direction + Math.PI / 2
+    );
+
+    this.rotationTransition = new TransitionState(
+      randomInt(5000, 10000),
+      materialEasing
+    );
+
+    this.startDirectionTime = Date.now();
+    this.endDirectionTime = Date.now() + randomInt(6000, 8000);
+  }
+
+  update() {
+    const now = Date.now();
+
+    const x = this.target.x - this.start.x;
+    const y = this.target.y - this.start.y;
+    const direction = this.endDirection - this.startDirection;
+
+    const dx = x * this.xTransition.now();
+    const dy = y * this.yTransition.now();
+    const dd = direction * this.rotationTransition.now();
+
+    this.position.x = this.start.x + dx;
+    this.position.y = this.start.y + dy;
+    this.direction = this.startDirection + dd;
+
+    if (this.xTransition.done) {
+      this.resetXAnimation();
+    }
+
+    if (this.yTransition.done) {
+      this.resetYAnimation();
+    }
+
+    if (this.rotationTransition.done) {
+      this.resetRoationAnimation();
+    }
+  }
+
+  resetXAnimation() {
+    this.start.x = this.target.x;
+    this.target.x = clamp(
+      randomInt(this.target.x - 100, this.target.x + 100),
+      -10,
+      window.innerWidth + 10
+    );
+    this.xTransition = new TransitionState(
+      randomInt(4000, 8000),
+      easeInOutSine
+    );
+  }
+
+  resetYAnimation() {
+    this.start.y = this.target.y;
+    this.target.y = clamp(
+      randomInt(this.target.y - 100, this.target.y + 100),
+      -10,
+      window.innerHeight + 10
+    );
+    this.yTransition = new TransitionState(
+      randomInt(3500, 8500),
+      easeInOutSine
+    );
+  }
+
+  resetRoationAnimation() {
+    this.startDirection = this.endDirection;
+
+    this.endDirection = randomInt(
+      this.direction - Math.PI / 2,
+      this.direction + Math.PI / 2
+    );
+
+    this.rotationTransition = new TransitionState(
+      randomInt(5000, 10000),
+      materialEasing
+    );
+  }
+}

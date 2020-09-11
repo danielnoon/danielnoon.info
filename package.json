@@ -1,0 +1,39 @@
+{
+  "name": "danielnoon.info",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --mode development",
+    "build": "webpack --mode production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielnoon/danielnoon.info.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danielnoon/danielnoon.info/issues"
+  },
+  "homepage": "https://github.com/danielnoon/danielnoon.info#readme",
+  "dependencies": {
+    "@types/clean-webpack-plugin": "^0.1.3",
+    "@types/file-loader": "^4.2.0",
+    "@types/html-webpack-plugin": "^3.2.3",
+    "@types/typescript": "^2.0.0",
+    "@types/webpack": "^4.41.21",
+    "@types/webpack-dev-server": "^3.11.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^4.2.1",
+    "file-loader": "^6.0.0",
+    "html-webpack-plugin": "^4.3.0",
+    "style-loader": "^1.2.1",
+    "ts-loader": "^8.0.2",
+    "typescript": "^3.9.7",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}
